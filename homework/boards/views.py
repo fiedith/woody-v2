@@ -1,11 +1,14 @@
 from django.http import JsonResponse
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status
-from .models import Board
-from .serializers import BoardSerializer
+from rest_framework import status, viewsets
+from rest_framework.viewsets import ModelViewSet
+
+from .models import Board, Comment
+from .serializers import BoardSerializer, CommentSerializer
 from users.models import User
 
 
@@ -18,6 +21,7 @@ class BoardListView(APIView):
         # many = True to get many objects
         serializer = BoardSerializer(boards, many=True)
         return Response(serializer.data)
+
 
 # INDIVIDUAL POSTS
 class BoardView(APIView):
@@ -48,3 +52,14 @@ class BoardView(APIView):
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Board.DoesNotExist:
             return Response({'message': 'Board not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+
+# COMMENTS VIEW
+# requirements: comments should provide all CRUD
+# in this case, viewsets provides APIs for all CRUD
+class CommentViewSet(viewsets.ModelViewSet):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(author_id=self.request.user.id if self.request.user.is_authenticated else None)
