@@ -2,8 +2,6 @@ from rest_framework import serializers
 from .models import Board, Comment
 from users.models import User
 
-from users.serializers import UserSerializer
-
 
 # posts
 class BoardSerializer(serializers.ModelSerializer):
@@ -12,7 +10,7 @@ class BoardSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Board
-        fields = ['id', 'title', 'content', 'author', 'comments']
+        fields = ['id', 'title', 'content', 'author']
 
     def create(self, validated_data):
         comments_data = validated_data.pop('comments', None)

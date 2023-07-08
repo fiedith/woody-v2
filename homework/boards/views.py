@@ -22,9 +22,6 @@ class BoardListView(APIView):
         serializer = BoardSerializer(boards, many=True)
         return Response(serializer.data)
 
-
-# INDIVIDUAL POSTS
-class BoardView(APIView):
     # CREATE POST
     @swagger_auto_schema(request_body=BoardSerializer, operation_id="Create post")
     def post(self, request):
@@ -42,6 +39,9 @@ class BoardView(APIView):
                 return Response({'message': 'Author does not exist.'}, status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
+# INDIVIDUAL POSTS
+class BoardView(APIView):
     # DELETE POST
     @swagger_auto_schema(operation_id="Delete post")
     def delete(self, request, pk=None):
