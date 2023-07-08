@@ -1,7 +1,7 @@
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import status, generics
 
 from .models import User
 from .serializers import UserSerializer
@@ -15,11 +15,24 @@ class UserView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    # @swagger_auto_schema(operation_id="Delete user")
+    # def delete(self, request):
+    #     user = User.objects.filter(username=request.data.get('username')).first()
+    #     if user:
+    #         user.delete()
+    #         return Response(status=status.HTTP_204_NO_CONTENT)
+    #     return Response({'message': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+
+class UserDeleteView(generics.DestroyAPIView):
+    queryset = User.objects.all()
 
     @swagger_auto_schema(operation_id="Delete user")
-    def delete(self, request):
-        user = User.objects.filter(username=request.data.get('username')).first()
-        if user:
+    def delete(self, request, *args, **kwargs):
+        user_id = kwargs.get('pk')
+        try:
+            user = self.get_queryset().get(pk=user_id)
             user.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
-        return Response({'message': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
+        except User.DoesNotExist:
+            return Response({'message': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
