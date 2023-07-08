@@ -36,6 +36,9 @@ urlpatterns = [
     # users
     path('api/users/', include('users.urls')),
 
+    # boards
+    path('api/boards/', include('boards.urls')),
+
     # swaggers
     path('api-auth/', include('rest_framework.urls')),
     path('api-token-auth/', obtain_auth_token, name='api-token-auth'),
